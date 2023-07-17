@@ -1,47 +1,567 @@
-<html>
-  <head>
-    <!--Load the AJAX API-->
-    <!-- <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> -->
-    <script src="./assets/js/chart.js"></script>
-    <script type="text/javascript">
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
 
-      // Load the Visualization API and the corechart package.
-      google.charts.load('current', {'packages':['corechart']});
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/x-icon" href="../assets/img/favicon.ico">
 
-      // Set a callback to run when the Google Visualization API is loaded.
-      google.charts.setOnLoadCallback(drawChart);
+    <title>chart</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
 
-      // Callback that creates and populates a data table,
-      // instantiates the pie chart, passes in the data and
-      // draws it.
-      function drawChart() {
+    <script src="../assets/js/jquery.js"></script>
+    <script src="../assets/js/front.js"></script>
 
-        // Create the data table.
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Topping');
-        data.addColumn('number', 'Slices');
-        data.addRows([
-          ['Mushrooms', 3],
-          ['Onions', 1],
-          ['Olives', 1],
-          ['Zucchini', 1],
-          ['Pepperoni', 2]
-        ]);
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    
+</head>
+<body>
 
-        // Set chart options
-        var options = {'title':'How Much Pizza I Ate Last Night',
-                       'width':400,
-                       'height':300};
 
-        // Instantiate and draw our chart, passing in some options.
-        var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
-        chart.draw(data, options);
-      }
-    </script>
-  </head>
+    <div class="chart_bar_vertical_double_wrap">
+        <div class="data_wrap"></div>
+        <div class="data_label">
+            <ul>
+                <li>보유EV 대수</li>
+                <li>당월</li>
+            </ul>
+        </div>
+        <p class="data_info">LPG 1,057원 기준</p>
+    </div><!-- .chart_bar_vertical_double_wrap -->
 
-  <body>
-    <!--Div that will hold the pie chart-->
-    <div id="chart_div"></div>
-  </body>
+
+    <div class="chart_bar_vertical_wrap">
+        <div class="data_wrap"></div>
+        <div class="data_label">
+            <ul>
+                <li>월별</li>
+                <li>당월</li>
+            </ul>
+        </div>
+    </div><!-- .chart_bar_vertical_wrap -->
+
+
+    <div class="chart_guage_wrap">
+        <svg class="circle_progress" width="190" height="190" viewBox="-20 -20 230 230">
+            <defs>
+                <linearGradient id="myGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#FF4392" />
+                    <stop offset="100%" stop-color="#FFC086" />
+                </linearGradient>
+            </defs>
+            <image href="../assets/img/index/circle_progress_bg.png" x="10" y="10" height="170" width="170" />
+            <circle class="frame" cx="95" cy="95" r="100" stroke-dashoffset="314.159" stroke-dasharray="628.319"></circle>
+            <circle class="bar" stroke="url(#myGradient)" cx="95" cy="95" r="100" stroke-dashoffset="628.319" stroke-dasharray="628.319"></circle>
+        </svg>
+        <div class="info">
+            <span class="value">
+                <strong>72</strong>점
+            </span>
+            <span class="txt">
+                전월대비 <strong class="up">2점 상승 ▲</strong>
+            </span>
+        </div>
+    </div><!-- .chart_guage_wrap -->
+
+
+
+    <div class="chart_bar_horizontal_wrap">
+        <div class="data_wrap"></div>
+        <div class="data_label">
+            <ul>
+                <li>월별</li>
+                <li>당월</li>
+            </ul>
+        </div>
+    </div><!-- .chart_bar_horizontal_wrap -->
+    
+    <div class="myChart_wrap">
+        <canvas id="myChart"></canvas>
+        <div class="data_label">
+            <ul>
+                <li>급가속</li>
+                <li>급감속</li>
+                <li>당월</li>
+            </ul>
+        </div>
+        <p class="data_info">월평균</p>
+    </div>
+    
+    <div class="myChart_wrap2">
+        <canvas id="myChart2"></canvas>
+        <div class="data_label">
+            <ul>
+                <li>총 충전횟수</li>
+                <li>급속횟수</li>
+                <li>충전량</li>
+                <li>당월</li>
+            </ul>
+        </div>
+        <p class="data_info">월평균</p>
+    </div>
+
+<script>
+
+$(()=>{
+    
+    const ctx = document.getElementById('myChart').getContext("2d");
+    var gradientStroke = ctx.createLinearGradient(0, 0, 0, 200);
+    gradientStroke.addColorStop(0.5, "#C3C3C3");
+    gradientStroke.addColorStop(0.9, "#fff");
+
+    
+    var gradientStroke2 = ctx.createLinearGradient(0, 0, 0, 200);
+    gradientStroke2.addColorStop(0.5, "#B1A4FF");
+    gradientStroke2.addColorStop(0.9, "#fff");
+
+    Chart.register(ChartDataLabels);
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            datasets: [
+                {
+                    type: 'line',
+                    label: '급감속',
+                    data: [10, 12, 7, 15, 12, 18],
+                    backgroundColor: ['#9C9C9C', '#9C9C9C', '#9C9C9C', '#9C9C9C', '#9C9C9C', '#fff'],
+                    borderColor: ['#9C9C9C', '#9C9C9C', '#9C9C9C', '#9C9C9C', '#9C9C9C', '#B1A4FF'],
+                    borderWidth: 1,
+                    pointStyle: ['circle', 'circle', 'circle', 'circle', 'circle', 'circle'],
+                    pointRAdius: 10,
+                    pointBorderWidth: [1, 1, 1, 1, 1, 3],
+                    datalabels: {
+                        align: 'top',
+                        textAlign: 'start',
+                        color: '#656565',
+                        font: {
+                            size: 10,
+                        }
+                    },
+                },
+                {
+                    type: 'bar',
+                    label: '급가속',
+                    data: [31, 28, 23, 45, 30, 5],
+                    barThickness: 20,
+                    backgroundColor: [
+                        gradientStroke,
+                        gradientStroke,
+                        gradientStroke,
+                        gradientStroke,
+                        gradientStroke,
+                        gradientStroke2
+                    ],
+                    borderRadius: 9999,
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'end',
+                        color: '#656565',
+                        font: {
+                            size: 10,
+                        }
+                    },
+                    clip: false,
+                }
+            ],
+            labels: ['12월', '1월', '2월', '3월', '4월', '당월']
+        },
+        datalabels: {
+            color:'black',
+            font:{size:24}
+        },
+        options: {
+            // responsive: false,
+            maintainAspectRatio: false,
+            showTooltips: false,
+            plugins:{
+                datalabels: {
+                    color: '#656565',
+                },
+                legend: {
+                    display: false,
+                },
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false,
+                    },
+                    ticks: {
+                        font:{
+                            size: 10,
+                        },
+                        color: '#bbb'
+                    },
+                },
+                y: {
+                    grid: {
+                        color: "#E1E1E1",
+                        tickLength: 0,
+                    },
+                    border: {
+                        dash: [2,2],
+                    },
+                    ticks: {
+                        stepSize: 16,
+                        color: "transparent"
+                    },
+                },
+            }
+        }
+    });
+})
+
+
+
+$(()=>{
+    
+    const ctx = document.getElementById('myChart2').getContext("2d");
+    var gradientStroke = ctx.createLinearGradient(0, 0, 0, 200);
+    gradientStroke.addColorStop(0.5, "#C3C3C3");
+    gradientStroke.addColorStop(0.9, "#fff");
+
+    
+    var gradientStroke2 = ctx.createLinearGradient(0, 0, 0, 200);
+    gradientStroke2.addColorStop(0.5, "#009AFE");
+    gradientStroke2.addColorStop(0.9, "#fff");
+
+    Chart.register(ChartDataLabels);
+
+    let data = [2589, 1890, 2505, 1790, 2450, 1512];
+    let newData = data.map((item, idx)=>{
+        console.log('item', item);
+        return (item * 0.1).toFixed(0);
+    })
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            datasets: [
+                {
+                    type: 'line',
+                    label: '충전량',
+                    data: newData,
+                    backgroundColor: ['#9C9C9C', '#9C9C9C', '#9C9C9C', '#9C9C9C', '#9C9C9C', '#fff'],
+                    borderColor: ['#9C9C9C', '#9C9C9C', '#9C9C9C', '#9C9C9C', '#9C9C9C', '#009AFE'],
+                    borderWidth: 1,
+                    pointStyle: ['circle', 'circle', 'circle', 'circle', 'circle', 'circle'],
+                    pointRAdius: 10,
+                    pointBorderWidth: [1, 1, 1, 1, 1, 3],
+                    datalabels: {
+                        value: [1,2,3,4,5,6],
+                        align: 'top',
+                        textAlign: 'start',
+                        color: '#CDCDCD',
+                        font: {
+                            size: 10,
+                        },
+                        formatter: function (value, context) {
+                            const result = data[context.dataIndex];
+                            const comma = result.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            return comma;
+                        },
+                    },
+                },
+                {
+                    type: 'bar',
+                    label: '급속횟수',
+                    data: [55, 60, 61, 28, 62, 32],
+                    barThickness: 20,
+                    backgroundColor: [
+                        gradientStroke,
+                        gradientStroke,
+                        gradientStroke,
+                        gradientStroke,
+                        gradientStroke,
+                        gradientStroke2
+                    ],
+                    borderRadius: 9999,
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'bottom',
+                        color: '#656565',
+                        font: {
+                            size: 10,
+                        }
+                    },
+                    clip: false,
+                },
+                {
+                    type: 'bar',
+                    label: '총 충전횟수',
+                    data: [57, 62, 70, 67, 72, 61],
+                    barThickness: 20,
+                    backgroundColor: '#E9E9E9',
+                    borderRadius: 9999,
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'end',
+                        color: '#656565',
+                        font: {
+                            size: 10,
+                        }
+                    },
+                },
+            ],
+            
+            labels: ['12월', '1월', '2월', '3월', '4월', '당월']
+        },
+        datalabels: {
+            color:'black',
+            font:{size:24}
+        },
+        options: {
+            maintainAspectRatio: false,
+            showTooltips: false,
+            plugins:{
+                datalabels: {
+                    color: '#656565',
+                },
+                legend: {
+                    display: false,
+                },
+                
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false,
+                    },
+                    ticks: {
+                        font:{
+                            size: 10,
+                        },
+                        color: '#bbb'
+                    },
+                    stacked: true,
+                },
+                y: {
+                    grid: {
+                        color: "#E1E1E1",
+                        tickLength: 0,
+                    },
+                    border: {
+                        dash: [2,2],
+                    },
+                    ticks: {
+                        stepSize: 16,
+                        color: "transparent"
+                    },
+                    stacked: true,
+                },
+            }
+        }
+    });
+})
+
+
+
+
+    
+
+$(()=>{
+    _chartGuage.init();
+    _chartBarHorizontal.init();
+    _chartBarVertical.init();
+    _chartBarVerticalDouble.init();
+});
+
+let _chartBarVerticalDouble = {
+    data: [123456, 100000, 90000, 80000, 70000, 79311],
+    maxData: 99999,
+    
+    data2: [18, 18, 25, 25, 28, 32],
+    maxData2: 99999,
+
+    label: ['12월', '1월', '2월', '3월', '4월', '당월'],
+
+    frame: $(document).find(".chart_bar_vertical_double_wrap"),
+
+    init: function(){
+        this.setData();
+    },
+    setData: function(){
+
+        _chartBarVerticalDouble.frame.find(".data_wrap").html('<ul class="data_ul"></ul>');
+        const data_ul = _chartBarVerticalDouble.frame.find(".data_ul");
+
+        this.maxData = Math.max.apply(null, this.data) + 5000; // get max data
+        this.maxData2 = Math.max.apply(null, this.data2) + 10; // get max data
+
+        this.data.map((item, idx)=>{
+
+            const minItem = item + 2500;
+            const per = ((minItem * 100) / this.maxData).toFixed(0);
+            const comma = item.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            
+            const per2 = ((this.data2[idx] * 100) / this.maxData2).toFixed(0);
+
+            let text = ( this.data.length-1 == idx ) ? `${comma}원` : `${comma}`;
+            let text2 = this.data2[idx];
+
+            let html = `
+                <li>
+                    <div class="label">${_chartBarVerticalDouble.label[idx]}</div>
+                    <div class="graph">
+                        <span class="guage" style="height:${per}%">
+                            <span class="data">${text}</span>
+                        </span>
+                        <span class="guage2" style="height:${per2}%">
+                            <span class="data">${text2}</span>
+                        </span>
+                    </div>
+                </li>
+            `;
+
+            data_ul.append(html);
+        })
+    }
+}
+
+let _chartBarVertical = {
+    data: [11211, 8910, 7899, 13540, 12002, 1563],
+    label: ['12월', '1월', '2월', '3월', '4월', '당월'],
+    maxData: 99999,
+
+    frame: $(document).find(".chart_bar_vertical_wrap"),
+
+    init: function(){
+        this.setData();
+    },
+    setData: function(){
+
+        _chartBarVertical.frame.find(".data_wrap").html('<ul class="data_ul"></ul>');
+        const data_ul = _chartBarVertical.frame.find(".data_ul");
+
+        this.maxData = Math.max.apply(null, this.data) + 5000; // get max data
+
+        this.data.map((item, idx)=>{
+
+            const minItem = item + 2500;
+            const per = ((minItem * 100) / this.maxData).toFixed(0);
+            const comma = item.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+            let text = ( this.data.length-1 == idx ) ? `${comma}Km` : `${comma}`;
+
+            let html = `
+                <li>
+                    <div class="label">${_chartBarVertical.label[idx]}</div>
+                    <div class="graph">
+                        <span class="guage" style="height:${per}%">
+                            <span class="data">${text}</span>
+                        </span>
+                    </div>
+                </li>
+            `;
+
+            data_ul.append(html);
+        })
+    }
+}
+
+let _chartBarHorizontal = {
+    data: [6.2, 6.0, 5.7, 7.0, 6.5, 6.7],
+    label: ['12월', '1월', '2월', '3월', '4월', '당월'],
+
+    frame: $(document).find(".chart_bar_horizontal_wrap"),
+
+    init: function(){
+        this.setData();
+    },
+    setData: function(){
+
+        _chartBarHorizontal.frame.find(".data_wrap").html('<ul class="data_ul"></ul>');
+        const data_ul = _chartBarHorizontal.frame.find(".data_ul");
+
+        this.data.map((item, idx)=>{
+            const per = item * 10;
+            let text = ( this.data.length-1 == idx ) ? `${item.toFixed(1)}(km/kwh)` : `${item.toFixed(1)}`;
+
+            let html = `
+                <li>
+                    <div class="label">${_chartBarHorizontal.label[idx]}</div>
+                    <div class="graph">
+                        <span class="guage" style="width:${per}%">
+                            <span class="data">${text}</span>
+                        </span>
+                    </div>
+                </li>
+            `;
+
+            data_ul.append(html);
+        })
+    }
+    
+}
+
+
+let _chartGuage = {
+    PreviousData: 70,   // 이전 데이터
+    data: 72,   // 현재 데이터
+
+    frame: $(document).find(".chart_guage_wrap .frame"),
+    bar: $(document).find(".chart_guage_wrap .bar"),
+    value: $(document).find(".chart_guage_wrap .value"),
+    RADIUS: document.querySelector(".chart_guage_wrap .frame").getAttribute("r"),   // 100
+    init: function(){
+
+        let gauge = _chartGuage.gauge(100);                           // 반원
+        let dasyarray = _chartGuage.dashArray();
+        let dashoffset = dasyarray * (1-gauge);
+        
+        // frame
+        _chartGuage.frame.css({ "stroke-dashoffset" : dashoffset });
+        _chartGuage.frame.css({ "stroke-dasharray" : dasyarray });
+
+        // bar
+        _chartGuage.bar.css({ "stroke-dasharray" : dasyarray });
+
+        _chartGuage.setData(_chartGuage.data);
+    },
+    gauge: function(per){
+        return per / 100;                   // 원 (1)
+    },
+    dashArray: function(){                  //  점선 (고정값)
+        return 2 * Math.PI * this.RADIUS;
+    },
+    dashOffset: function(per){              // 시작점 (animation)
+        // let progress = per / 200;
+        let gauge = _chartGuage.gauge(per);
+        let dashoffset = _chartGuage.dashArray() * (1-gauge);
+
+        return dashoffset;
+    },
+    discription: function(per){
+        let text = '';
+        if( _chartGuage.PreviousData > _chartGuage.data ){
+            let num = _chartGuage.PreviousData - _chartGuage.data;
+            text = `전월대비 <strong class="down">${num}점 하락 ▼</strong>`;
+        } else if( _chartGuage.PreviousData < _chartGuage.data ) {
+            let num = _chartGuage.data - _chartGuage.PreviousData;
+            text = `전월대비 <strong class="up">${num}점 상승 ▲</strong>`;
+        } else {
+            text ='전월과 <strong>동일</strong>';
+        }
+
+        return text;
+    },
+    setData: function(per){
+        let gauge = _chartGuage.gauge(per);   // 반원
+        let dasyarray = _chartGuage.dashArray();
+        let dashoffset = dasyarray * (1-gauge);
+
+        _chartGuage.bar.css({ "stroke-dashoffset" : dashoffset });
+
+        // data setting
+        $(document).find(".chart_guage_wrap .value strong").html(_chartGuage.data);
+
+        // discription setting
+        let text = _chartGuage.discription();
+        $(document).find(".chart_guage_wrap .info .txt").html(text);
+    }
+}
+</script>
+</body>
 </html>

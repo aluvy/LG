@@ -37,7 +37,7 @@ const _device = {
         ( ios.test(userAgent) ) ? elem.addClass("ios") : null;
         ( aos.test(userAgent) ) ? elem.addClass("aos") : null;
     },
-    /**
+    /** 
      * 모바일 디바이스 일 때 true 반환
      * @returns boolean
      */
@@ -499,6 +499,9 @@ const _layout = {
                         <dd>07335 서울특별시 영등포구 여의대로 108</dd>
                     </dl>
                     <p><strong>LG Energy Solution</strong> All rights Reserved.</p>
+                </div>
+                <div class="footer_awards">
+                    <p class="award_item">2023 국가서비스대상<br> 전기차 배터리 관리 앱 부문</p>
                 </div>
             </div>
         `;
